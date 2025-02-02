@@ -1,0 +1,64 @@
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes slideDown {
+    from {
+        height: 0;
+    }
+    to {
+        height: var(--target-height);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        height: var(--target-height);
+    }
+    to {
+        height: 0;
+    }
+}
+
+.menu-hidden {
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    animation: slideUp 0.3s ease-in-out forwards;
+    transition: height 0.3s ease-in-out, visibility 0s linear 0.3s;
+}
+
+.menu-visible {
+    height: auto;
+    overflow: hidden;
+    visibility: visible;
+    animation: slideDown 0.3s ease-in-out forwards;
+    transition: height 0.3s ease-in-out, visibility 0s linear 0s;
+}
+
+.menu-hidden.no-animation,
+.menu-visible.no-animation {
+    animation: none !important;
+    transition: none !important;
+}
+
+.loader {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #ddd;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+li {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
