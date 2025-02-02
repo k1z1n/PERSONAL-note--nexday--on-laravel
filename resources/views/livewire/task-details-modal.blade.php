@@ -4,7 +4,7 @@
              wire:click="closeModalIfOutside">
 
             {{-- Контейнер модального окна --}}
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative animate-fade-in"
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-4 relative animate-fade-in"
                  wire:click.stop>
 
                 {{-- Кнопка закрытия --}}
@@ -13,11 +13,8 @@
                 </button>
 
                 {{-- Заголовок (Срок выполнения) --}}
-                <h2 class="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-3 ">
-                    <span class="text-gray-700">Срок:</span>
-                    <span class=" font-semibold">
-                        {{ $task->formatted_due_date }}
-                    </span>
+                <h2 class="text-2xl font-medium mb-6 text-gray-600 break-words whitespace-normal">
+                    Срок: <span class="font-semibold text-black">{{ $task->formatted_due_date }}</span>
                 </h2>
 
                 {{-- Детали задачи --}}
