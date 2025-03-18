@@ -29,13 +29,5 @@
                 У вас нет аккаунта? <a href="{{ route('view.register') }}" class="text-green-500 hover:underline">Зарегистрироваться</a>
             </p>
         </form>
-
-        {{-- Кнопка для отправки тестового email --}}
-        <form action="{{ route('test.email') }}" method="POST" class="mt-6 text-center">
-            @csrf
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                📩 Отправить тестовый email
-            </button>
-        </form>
     </div>
 @endsection

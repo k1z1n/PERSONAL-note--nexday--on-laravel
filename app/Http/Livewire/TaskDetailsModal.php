@@ -40,6 +40,18 @@ class TaskDetailsModal extends Component
         $this->closeModal();
     }
 
+    public function makeToday($taskId)
+    {
+        $this->task = Task::findOrFail($taskId);
+        $this->task->due_date = Carbon::today()->toDateString();
+        $this->task->save();
+
+        $this->updateFormattedDueDate(); // Убедитесь, что метод существует
+
+        $this->dispatch('taskUpdated'); // Работает только в Livewire
+        $this->closeModal(); // Убедитесь, что метод существует
+    }
+
     /**
      * Переносит задачу на завтра.
      */
@@ -86,15 +98,20 @@ class TaskDetailsModal extends Component
     private function updateFormattedDueDate(): void
     {
         $dueDate = Carbon::parse($this->task->due_date);
-        if ($dueDate->isToday()) {
-            $this->task->formatted_due_date = 'До конца дня';
-        } elseif ($dueDate->isTomorrow()) {
-            $this->task->formatted_due_date = 'Завтра надо сделать';
-        } elseif ($dueDate->isYesterday()) {
-            $this->task->formatted_due_date = 'Вчера надо было';
-        } else {
-            $this->task->formatted_due_date = $dueDate->translatedFormat('d F Y (l)');
+        if(!is_null($this->task->due_date)){
+            if ($dueDate->isToday()) {
+                $this->task->formatted_due_date = 'До конца дня';
+            } elseif ($dueDate->isTomorrow()) {
+                $this->task->formatted_due_date = 'Завтра надо сделать';
+            } elseif ($dueDate->isYesterday()) {
+                $this->task->formatted_due_date = 'Вчера надо было';
+            } else {
+                $this->task->formatted_due_date = $dueDate->translatedFormat('d F Y (l)');
+            }
+        }else{
+            $this->task->formatted_due_date = 'Без ограничений';
         }
+
     }
 
     public function render()

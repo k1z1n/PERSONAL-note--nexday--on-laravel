@@ -109,30 +109,28 @@ class TaskList extends Component
         $today = Carbon::today();
 
         $formattedTasks = collect($tasks)->map(function ($task) {
-            $dueDate = Carbon::parse($task->due_date);
+            if ($task->due_date) {
+                $dueDate = Carbon::parse($task->due_date);
 
-            if ($dueDate->isToday()) {
-                $task->formatted_due_date = 'Сегодня';
-            } elseif ($dueDate->isTomorrow()) {
-                $task->formatted_due_date = 'Завтра надо сделать';
-            } elseif ($dueDate->isYesterday()) {
-                $task->formatted_due_date = 'Вчера надо было';
+                if ($dueDate->isToday()) {
+                    $task->formatted_due_date = 'Сегодня';
+                } elseif ($dueDate->isTomorrow()) {
+                    $task->formatted_due_date = 'Завтра надо сделать';
+                } elseif ($dueDate->isYesterday()) {
+                    $task->formatted_due_date = 'Вчера надо было';
+                } else {
+                    $task->formatted_due_date = $dueDate->translatedFormat('d F Y (l)');
+                }
             } else {
-                $task->formatted_due_date = $dueDate->translatedFormat('d F Y (l)');
+                $task->formatted_due_date = 'Без ограничений';
             }
             return $task;
         });
-
         return view('livewire.task-list', [
-            'urgentTasks' => $formattedTasks->filter(
-                fn($task) => Carbon::parse($task->due_date)->isBefore($today)
-            ),
-            'todayTasks' => $formattedTasks->filter(
-                fn($task) => Carbon::parse($task->due_date)->isToday()
-            ),
-            'upcomingTasks' => $formattedTasks->filter(
-                fn($task) => Carbon::parse($task->due_date)->isAfter($today)
-            ),
+            'urgentTasks' => $formattedTasks->filter(fn($task) => $task->due_date && Carbon::parse($task->due_date)->isBefore($today)),
+            'todayTasks' => $formattedTasks->filter(fn($task) => $task->due_date && Carbon::parse($task->due_date)->isToday()),
+            'upcomingTasks' => $formattedTasks->filter(fn($task) => $task->due_date && Carbon::parse($task->due_date)->isAfter($today)),
+            'noDateTasks' => $formattedTasks->filter(fn($task) => !$task->due_date),
             'notification' => $this->notification,
         ]);
     }

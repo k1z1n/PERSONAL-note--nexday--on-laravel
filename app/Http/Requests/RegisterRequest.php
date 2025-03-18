@@ -11,7 +11,7 @@ class RegisterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->guest();
     }
 
     /**
@@ -22,22 +22,24 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:2|unique:users,name',
-            'email' => 'email|required|unique:users,email',
-            'password' => 'required|min:8',
+            'name'     => 'required|min:2|unique:users,name',
+            'email'    => 'email|required|unique:users,email',
+            'password' => 'required|min:8|confirmed',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'Имя пользователя не может быть пустым',
-            'name.min' => 'Имя пользователя должно содержать минимум 2 символа',
-            'name.unique' => 'Имя пользователя уже зарегистрировано',
-            'email.required' => 'Email не может быть пустым',
-            'email.unique' => 'Email уже зарегистрирован',
-            'password.required' => 'Пароль не может быть пустым',
-            'password.min' => 'Пароль должен содержать минимум 8 символов',
+            'name.required'      => 'Имя пользователя не может быть пустым',
+            'name.min'           => 'Имя пользователя должно содержать минимум 2 символа',
+            'name.unique'        => 'Имя пользователя уже зарегистрировано',
+            'email.required'     => 'Email не может быть пустым',
+            'email.email'        => 'Введите корректный email адрес',
+            'email.unique'       => 'Email уже зарегистрирован',
+            'password.required'  => 'Пароль не может быть пустым',
+            'password.min'       => 'Пароль должен содержать минимум 8 символов',
+            'password.confirmed' => 'Пароли не совпадают',
         ];
     }
 }

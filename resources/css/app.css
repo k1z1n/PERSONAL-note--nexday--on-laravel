@@ -62,3 +62,9 @@
 li {
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
+
+.my-single{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

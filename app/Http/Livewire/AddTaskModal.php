@@ -17,18 +17,16 @@ class AddTaskModal extends Component
     protected array $rules = [
         'title'       => 'required|string|max:255',
         'description' => 'nullable|string|max:1000',
-        'due_date'    => 'required|date',
+        'due_date'    => 'nullable|date',
     ];
 
     protected array $messages = [
-        'title.required'       => 'Поле "Название задачи" обязательно для заполнения.',
-        'title.string'         => 'Поле "Название задачи" должно быть строкой.',
-        'title.max'            => 'Поле "Название задачи" не должно превышать :max символов.',
-        'description.required' => 'Поле "Описание" обязательно для заполнения.',
-        'description.string'   => 'Поле "Описание" должно быть строкой.',
-        'description.max'      => 'Поле "Описание" не должно превышать :max символов.',
-        'due_date.required'    => 'Поле "Дата окончания" обязательно для заполнения.',
-        'due_date.date'        => 'Поле "Дата окончания" должно быть корректной датой.',
+        'title.required'       => 'Заполни поле для задачи',
+        'title.string'         => 'Поле должно содержать текст',
+        'title.max'            => 'Задача может содержать только :max символов',
+        'description.string'   => 'Поле должно содержать текст',
+        'description.max'      => 'Задача может содержать только :max символов',
+        'due_date.date'        => 'Введи корректную дату',
     ];
 
     public function clearNotification()
@@ -46,12 +44,16 @@ class AddTaskModal extends Component
     public function saveTask()
     {
         $this->validate();
+//
+//        dd(
+//            $this->validate()
+//        );
 
         // Создаём задачу в БД с user_id текущего пользователя
         $task = Task::create([
             'title'       => $this->title,
             'description' => $this->description,
-            'due_date'    => $this->due_date,
+            'due_date'    => empty($this->due_date) ? null : $this->due_date,
             'user_id'     => auth()->id(),
         ]);
 

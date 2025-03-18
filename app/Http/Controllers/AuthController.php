@@ -67,10 +67,14 @@ class AuthController extends Controller
 
     public function verify(Request $request, $id, $hash)
     {
+        if (! $request->hasValidSignature()) {
+            abort(403, 'Ссылка просрочена или недействительна.');
+        }
+
         $user = User::findOrFail($id);
 
         if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            abort(403, 'Invalid verification link.');
+            abort(403, 'Неверная ссылка подтверждения.');
         }
 
         if (!$user->hasVerifiedEmail()) {
@@ -79,7 +83,7 @@ class AuthController extends Controller
             // Авторизуем пользователя сразу после подтверждения
             Auth::login($user);
 
-            return redirect('/home')->with('message', 'Ваш email подтвержден!');
+            return redirect('/')->with('message', 'Ваш email подтвержден!');
         }
 
         return redirect('/login')->with('message', 'Ваш email уже подтвержден.');
@@ -103,5 +107,9 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('view.home')->with('message', 'Вы успешно вышли из аккаунта.');
+    }
+
+    public function showEmailVerify(){
+        return view('auth.verify-email');
     }
 }

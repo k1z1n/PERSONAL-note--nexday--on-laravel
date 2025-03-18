@@ -5,15 +5,17 @@
 
 @section('content')
     <div class="container mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 mt-6 px-4">Задачи</h1>
+        <div class="flex justify-between">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 mt-6 px-4">Задачи</h1>
+            <livewire:add-task-modal/>
+        </div>
 
         {{-- Компонент модального окна для добавления новой задачи --}}
-        <livewire:add-task-modal />
 
         {{-- Компонент списка задач --}}
-        <livewire:task-list />
+        <livewire:task-list/>
 
         {{-- Модальное окно для подробностей задачи --}}
-        <livewire:task-details-modal />
+        <livewire:task-details-modal/>
     </div>
 @endsection

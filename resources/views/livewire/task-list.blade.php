@@ -2,7 +2,7 @@
     {{-- Уведомление --}}
     @if ($notification)
         <div id="notification"
-             class="fixed md:top-4 md:right-4 top-4 bg-green-500 mx-4 text-white px-6 py-3 rounded-lg shadow-md z-30">
+             class="fixed md:top-4 md:right-4 mx-4 top-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-md z-30">
             {{ $notification }}
         </div>
     @endif
@@ -12,11 +12,52 @@
         <input type="text" wire:model="search" wire:blur="applySearch" placeholder="Поиск задач..."
                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
     </div>
-
     {{-- Общая проверка: если во всех категориях задач нет, выводим одно сообщение --}}
-    @if($urgentTasks->isEmpty() && $todayTasks->isEmpty() && $upcomingTasks->isEmpty())
+    @if($urgentTasks->isEmpty() && $todayTasks->isEmpty() && $upcomingTasks->isEmpty() && $noDateTasks->isEmpty())
         <div class="p-4 text-center text-gray-600">Задачи не найдены</div>
     @else
+        @if($noDateTasks->count() > 0)
+            <div class="mb-6">
+                <h2 class="text-lg font-bold text-gray-500 px-4">Надо сделать</h2>
+                <div class="bg-white shadow rounded-lg overflow-hidden mx-4">
+                    <ul>
+                        @foreach ($noDateTasks as $task)
+                            <li class="border-b border-gray-200 last:border-none task-item">
+                                <div class="flex justify-between items-center p-4 hover:bg-gray-50">
+                                    <div class="flex-1 cursor-pointer" wire:click="showDetails({{ $task->id }})">
+                                        <p class="font-semibold text-gray-800 overflow-hidden text-ellipsis"
+                                           style="-webkit-line-clamp: 1; display: -webkit-box; -webkit-box-orient: vertical;">
+                                            {{ $task->title }}
+                                        </p>
+                                        <p class="text-sm text-gray-500">{{ $task->formatted_due_date }}</p>
+                                    </div>
+                                    <div class="flex space-x-2 ml-4">
+                                        <button wire:click.stop="confirmComplete({{ $task->id }})"
+                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="2"
+                                                 stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M4.5 12.75l6 6 9-13.5"/>
+                                            </svg>
+                                        </button>
+                                        <button wire:click.stop="confirmDelete({{ $task->id }})"
+                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="2"
+                                                 stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        @endif
         {{-- Срочные задачи --}}
         @if($urgentTasks->count() > 0)
             <div class="mb-6">
@@ -35,16 +76,18 @@
                                     </div>
                                     <div class="flex space-x-2 ml-4">
                                         <button wire:click.stop="confirmComplete({{ $task->id }})"
-                                                class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                       d="M4.5 12.75l6 6 9-13.5"/>
                                             </svg>
                                         </button>
                                         <button wire:click.stop="confirmDelete({{ $task->id }})"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                                class="bg-red-500 hover:bg-red-600 text-white px-1 py-1.5 rounded-lg text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                       d="M6 18L18 6M6 6l12 12"/>
@@ -77,16 +120,18 @@
                                     </div>
                                     <div class="flex space-x-2 ml-4">
                                         <button wire:click.stop="confirmComplete({{ $task->id }})"
-                                                class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                       d="M4.5 12.75l6 6 9-13.5"/>
                                             </svg>
                                         </button>
                                         <button wire:click.stop="confirmDelete({{ $task->id }})"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                       d="M6 18L18 6M6 6l12 12"/>
@@ -119,16 +164,18 @@
                                     </div>
                                     <div class="flex space-x-2 ml-4">
                                         <button wire:click.stop="confirmComplete({{ $task->id }})"
-                                                class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                       d="M4.5 12.75l6 6 9-13.5"/>
                                             </svg>
                                         </button>
                                         <button wire:click.stop="confirmDelete({{ $task->id }})"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                       d="M6 18L18 6M6 6l12 12"/>
@@ -175,22 +222,3 @@
         </div>
     @endif
 </div>
-
-{{--<script>--}}
-{{--    document.addEventListener("DOMContentLoaded", function () {--}}
-{{--        let observer = new IntersectionObserver(entries => {--}}
-{{--            entries.forEach(entry => {--}}
-{{--                if (entry.isIntersecting) {--}}
-{{--                    Livewire.dispatch('loadMoreDates');--}}
-{{--                }--}}
-{{--            });--}}
-{{--        });--}}
-
-{{--        observer.observe(document.getElementById('load-more-trigger'));--}}
-{{--    });--}}
-
-{{--    function toggleTasks(groupIndex) {--}}
-{{--        let taskList = document.getElementById('task-group-' + groupIndex);--}}
-{{--        taskList.classList.toggle('hidden');--}}
-{{--    }--}}
-{{--</script>--}}
