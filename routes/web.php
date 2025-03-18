@@ -7,12 +7,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('view.register');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
+Route::get('/email/verify', [AuthController::class, 'showEmailVerify'])
+    ->middleware('auth')->name('verification.notice');
 
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verify'])
-    ->middleware('signed')
+    ->middleware(['signed'])
     ->name('verification.verify');
 
 Route::post('/email/resend', [AuthController::class, 'sendVerificationEmail'])
