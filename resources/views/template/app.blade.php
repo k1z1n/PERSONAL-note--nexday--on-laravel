@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Laravel</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>--}}
     @livewireStyles
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -60,5 +60,20 @@
 </main>
 @include('includes.footer')
 @livewireScripts
+{{--<style>--}}
+{{--    @media (max-width: 768px) {--}}
+{{--        #footer {--}}
+{{--            display: none !important;--}}
+{{--        }--}}
+{{--    }--}}
+{{--</style>--}}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (/Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            document.getElementById("footer").style.display = "none";
+        }
+    });
+</script>
 </body>
 </html>

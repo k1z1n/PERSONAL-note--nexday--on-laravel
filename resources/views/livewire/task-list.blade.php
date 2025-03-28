@@ -6,12 +6,6 @@
             {{ $notification }}
         </div>
     @endif
-
-    {{-- Поиск --}}
-    <div class="mb-4 mx-4">
-        <input type="text" wire:model="search" wire:blur="applySearch" placeholder="Поиск задач..."
-               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-    </div>
     {{-- Общая проверка: если во всех категориях задач нет, выводим одно сообщение --}}
     @if($urgentTasks->isEmpty() && $todayTasks->isEmpty() && $upcomingTasks->isEmpty() && $noDateTasks->isEmpty())
         <div class="p-4 text-center text-gray-600">Задачи не найдены</div>
@@ -33,7 +27,7 @@
                                     </div>
                                     <div class="flex space-x-2 ml-4">
                                         <button wire:click.stop="confirmComplete({{ $task->id }})"
-                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
@@ -42,7 +36,7 @@
                                             </svg>
                                         </button>
                                         <button wire:click.stop="confirmDelete({{ $task->id }})"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
@@ -76,7 +70,7 @@
                                     </div>
                                     <div class="flex space-x-2 ml-4">
                                         <button wire:click.stop="confirmComplete({{ $task->id }})"
-                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
@@ -85,7 +79,7 @@
                                             </svg>
                                         </button>
                                         <button wire:click.stop="confirmDelete({{ $task->id }})"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-1 py-1.5 rounded-lg text-sm">
+                                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
@@ -120,7 +114,7 @@
                                     </div>
                                     <div class="flex space-x-2 ml-4">
                                         <button wire:click.stop="confirmComplete({{ $task->id }})"
-                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
@@ -129,7 +123,7 @@
                                             </svg>
                                         </button>
                                         <button wire:click.stop="confirmDelete({{ $task->id }})"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
@@ -164,7 +158,7 @@
                                     </div>
                                     <div class="flex space-x-2 ml-4">
                                         <button wire:click.stop="confirmComplete({{ $task->id }})"
-                                                class="bg-green-500 hover:bg-green-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">
@@ -173,7 +167,7 @@
                                             </svg>
                                         </button>
                                         <button wire:click.stop="confirmDelete({{ $task->id }})"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1.5 rounded-lg text-sm">
+                                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2"
                                                  stroke="currentColor" class="w-5 h-5">

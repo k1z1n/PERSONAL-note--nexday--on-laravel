@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Contracts\Services\AuthServiceContract;
+use App\Contracts\Services\CompletedTaskServiceInterface;
+use App\Services\AuthService;
+use App\Services\CompletedTaskService;
+use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +17,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(CompletedTaskServiceInterface::class, CompletedTaskService::class);
+        $this->app->singleton(AuthServiceContract::class, AuthService::class);
     }
 
     /**
@@ -20,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Carbon::setLocale('ru');
         Paginator::useTailwind();
     }
 }

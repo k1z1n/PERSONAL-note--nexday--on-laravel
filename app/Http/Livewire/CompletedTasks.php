@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Services\CompletedTaskService;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Task;
@@ -12,48 +14,39 @@ class CompletedTasks extends Component
 {
     use WithPagination;
 
-    public $datesPerPage = 10; // Количество загружаемых дат за раз
-    public $loadedDates; // Загруженные даты
-    public $allDatesLoaded = false; // Флаг загрузки всех данных
+    public int $userId;
+    public int $datesPerPage = 10;
+    public Collection $loadedDates;
+    public bool $allDatesLoaded = false;
+
+    protected CompletedTaskService $completedTaskService;
+
+    public function __construct()
+    {
+        $this->completedTaskService = app(CompletedTaskService::class);
+    }
 
     public function mount()
     {
+        $this->userId = Auth::id();
         $this->loadedDates = collect();
         $this->loadMoreDates();
     }
 
     public function loadMoreDates()
     {
-        if ($this->allDatesLoaded) return;
-
-        // Фильтруем задачи по текущему пользователю
-        $completedTasks = Task::completed()
-            ->where('user_id', auth()->id())
-            ->orderBy('updated_at', 'desc')
-            ->get()
-            ->map(function ($task) {
-                $task->formatted_completed_date = Carbon::parse($task->updated_at)
-                        ->translatedFormat('d F Y') . ' в ' . Carbon::parse($task->updated_at)->format('H:i');
-                return $task;
-            });
-
-        // Группируем задачи по дате
-        $groupedTasks = $completedTasks->groupBy(function ($task) {
-            return Carbon::parse($task->updated_at)->translatedFormat('d F Y');
-        });
-
-        // Получаем новые даты, которые ещё не загружены
-        $newDates = $groupedTasks->keys()->diff($this->loadedDates->keys())->take($this->datesPerPage);
-
-        if ($newDates->isEmpty()) {
-            $this->allDatesLoaded = true; // Все даты загружены
+        if ($this->allDatesLoaded) {
             return;
         }
 
-        // Добавляем новые даты в загруженные
-        foreach ($newDates as $date) {
-            $this->loadedDates[$date] = $groupedTasks[$date];
+        $groupedTasks = $this->completedTaskService->getGroupedCompletedTasks($this->userId, $this->datesPerPage);
+
+        if ($groupedTasks->isEmpty()) {
+            $this->allDatesLoaded = true;
+            return;
         }
+
+        $this->loadedDates = $this->loadedDates->merge($groupedTasks);
     }
 
     public function render()

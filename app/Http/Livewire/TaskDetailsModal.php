@@ -10,71 +10,50 @@ class TaskDetailsModal extends Component
 {
     public bool $showModal = false;
     public $task;
-    public ?string $notification = null; // Переменная для уведомления
-    public $newDueDate; // Свойство для выбранной даты при переносе
+    public ?string $notification = null;
+    public $newDueDate;
 
     protected $listeners = ['showTaskDetails' => 'loadTask'];
 
-    /**
-     * Загружает задачу по ID и показывает модальное окно.
-     */
     public function loadTask($taskId): void
     {
         $this->task = Task::findOrFail($taskId);
+        $this->updateFormattedDueDate();
         $this->showModal = true;
     }
 
-    /**
-     * Закрывает модальное окно и сбрасывает данные.
-     */
     public function closeModal(): void
     {
         $this->reset(['showModal', 'task', 'newDueDate']);
     }
 
-    /**
-     * Закрывает модальное окно при клике вне его.
-     */
     public function closeModalIfOutside(): void
     {
         $this->closeModal();
     }
 
-    public function makeToday($taskId)
-    {
-        $this->task = Task::findOrFail($taskId);
-        $this->task->due_date = Carbon::today()->toDateString();
-        $this->task->save();
-
-        $this->updateFormattedDueDate(); // Убедитесь, что метод существует
-
-        $this->dispatch('taskUpdated'); // Работает только в Livewire
-        $this->closeModal(); // Убедитесь, что метод существует
-    }
-
     /**
-     * Переносит задачу на завтра.
+     * Универсальный метод для изменения даты.
+     *
+     * @param int $taskId
+     * @param int $days Количество дней (+1 – завтра, 0 – сегодня, -1 – вчера)
      */
-    public function moveToTomorrow($taskId)
+    public function changeDueDate(int $taskId, int $days): void
     {
         $task = Task::findOrFail($taskId);
-        // Устанавливаем дату на завтра
-        $newDue = Carbon::tomorrow()->toDateString();
-        $task->due_date = $newDue;
+        $task->due_date = Carbon::today()->addDays($days)->toDateString();
         $task->save();
 
-        // Обновляем локальный объект задачи и пересчитываем форматированную дату
-        $this->task = Task::findOrFail($taskId);
+        $this->task->due_date = $task->due_date;
         $this->updateFormattedDueDate();
-
-        // Эмиттим событие, чтобы родительский компонент обновил список задач
         $this->dispatch('taskUpdated');
-
-        // Закрываем модальное окно
         $this->closeModal();
     }
 
-    public function moveToDate($taskId)
+    /**
+     * Переносит задачу на выбранную дату из input.
+     */
+    public function moveToDate($taskId): void
     {
         $this->validate([
             'newDueDate' => 'required|date'
@@ -84,48 +63,40 @@ class TaskDetailsModal extends Component
         $task->due_date = $this->newDueDate;
         $task->save();
 
-        $this->task = Task::findOrFail($taskId);
+        $this->task->due_date = $task->due_date;
         $this->updateFormattedDueDate();
-
         $this->dispatch('taskUpdated');
-
         $this->closeModal();
     }
 
-    /**
-     * Обновляет форматированное отображение даты выполнения задачи.
-     */
     private function updateFormattedDueDate(): void
     {
-        $dueDate = Carbon::parse($this->task->due_date);
-        if(!is_null($this->task->due_date)){
-            if ($dueDate->isToday()) {
-                $this->task->formatted_due_date = 'До конца дня';
-            } elseif ($dueDate->isTomorrow()) {
-                $this->task->formatted_due_date = 'Завтра надо сделать';
-            } elseif ($dueDate->isYesterday()) {
-                $this->task->formatted_due_date = 'Вчера надо было';
-            } else {
-                $this->task->formatted_due_date = $dueDate->translatedFormat('d F Y (l)');
-            }
-        }else{
+        Carbon::setLocale('ru');    // Важно: устанавливает локаль для Carbon
+        if (!$this->task->due_date) {
             $this->task->formatted_due_date = 'Без ограничений';
+            return;
         }
 
+        $dueDate = Carbon::parse($this->task->due_date);
+//        $this->task->formated_created_at = $dueDate->translatedFormat('d F Y (l)');
+        if ($dueDate->isToday()) {
+            $this->task->formatted_due_date = 'Сделай сегодня';
+        } elseif ($dueDate->isTomorrow()) {
+            $this->task->formatted_due_date = 'На завтра';
+        } elseif ($dueDate->isYesterday()) {
+            $this->task->formatted_due_date = 'Вчера надо было';
+        } else {
+            $this->task->formatted_due_date = $dueDate->translatedFormat('d F Y (l)');
+        }
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
     {
         if ($this->showModal && $this->task) {
-            // Обновляем форматированное отображение даты выполнения
             $this->updateFormattedDueDate();
-            // Форматируем дату создания задачи в нужном виде (например, "01 декабря 2025 в 10:59")
             $this->task->formatted_created_at = $this->task->created_at->translatedFormat('d F Y \в H:i');
         }
 
-        if ($this->showModal) {
-            $this->notification = null;
-        }
         return view('livewire.task-details-modal');
     }
 }
